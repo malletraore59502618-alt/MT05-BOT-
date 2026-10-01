@@ -10,8 +10,7 @@ def vs_handler(m):
     parts=m.text.lower().split('vs')
     dom=parts[0].strip().title()
     ext=parts[1].strip().title()
-    users[m.chat.id]={'dom':dom,'ext':ext,'step':1}
-    bot.reply_to(m, f"Match: {dom} vs {ext}\nCote DOMICILE 1?")
+    users[m.chat.id]={'dom':dom,'ext':ext,'s_to(m, f"Match: {dom} vs {ext}\nCote DOMICILE 1?")
 @bot.message_handler(func=lambda m: True)
 def cotes(m):
     cid=m.chat.id
