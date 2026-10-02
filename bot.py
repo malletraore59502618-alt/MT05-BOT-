@@ -1,91 +1,84 @@
-import os
-import telebot
-from flask import Flask
-import threading
-import random
 
-TOKEN = os.getenv("BOT_TOKEN")
-bot = telebot.TeleBot(TOKEN)
-app = Flask(__name__)
+import re
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-# Garde Render vivant
-@app.route('/')
-def home():
-    return "MT05 BOT ULTRA LIVE"
+# TON LIEN VIP - CHANGE ICI 👇
+LIEN_VIP = "https://t.me/mt05_vip_ci" # Mets ton vrai t.me ici
 
-# --- LOGIQUE PRONO ---
-def generer_analyse(match_text):
-    # Ex: CITY vs PARIS
-    parts = match_text.lower().split("vs")
-    if len(parts) < 2:
-        domicile = "Domicile"
-        exterieur = "Extérieur"
+def parse_match(text):
+    # Cherche les cotes
+    odds = re.findall(r'\d+\.\d+', text)
+    odd_dom = float(odds[0]) if len(odds) > 0 else 2.0
+    odd_ext = float(odds[1]) if len(odds) > 1 else 2.0
+
+    # Nettoie le texte pour avoir que les noms d'équipe
+    clean = re.sub(r'\d+\.\d+', '', text)
+    clean = re.sub(r'\s+', ' ', clean).strip()
+
+    if 'vs' in clean.lower():
+        parts = re.split(r'\s*vs\s*', clean, flags=re.IGNORECASE)
+        dom = parts[0].strip().upper()
+        ext = parts[1].strip().upper()
+        return dom, ext, odd_dom, odd_ext
+    return None, None, 0, 0
+
+def analyse_scores(odd_dom, odd_ext):
+    # Logique MT05 ULTRA
+    if odd_dom < odd_ext:
+        return [
+            ("1-1", 22),
+            ("2-1", 18),
+            ("1-0", 15),
+            ("0-1", 12)
+        ], 52, 22, 26
     else:
-        domicile = parts[0].strip().upper()
-        exterieur = parts[1].strip().upper()
+        return [
+            ("1-3", 20),
+            ("2-1", 18),
+            ("1-2", 16),
+            ("3-2", 12)
+        ], 26, 22, 52
 
-    # Simule tes % (tu pourras brancher ton IA après)
-    scores = [
-        ("1-1", 22),
-        ("2-1", 18),
-        ("1-0", 15),
-        ("0-1", 12),
-        ("2-0", 10)
-    ]
-    random.shuffle(scores)
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🔥 **MT05 PRO MAX - BOT ULTRA** 🔥\n\n"
+        "Envoie ton match comme ça :\n"
+        "`CITY vs PARIS`\n"
+        "ou\n"
+        "`REAL 2.10 vs 3.20 BARCA`\n\n"
+        "Je te donne Score Exact + Victoire % + SAFE",
+        parse_mode='Markdown'
+    )
 
-    # Calcul victoire
-    victoire_dom = random.randint(45, 58)
-    victoire_ext = random.randint(20, 35)
-    nul = 100 - victoire_dom - victoire_ext
+async def handle_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+    dom, ext, odd_dom, odd_ext = parse_match(text)
 
-    msg = f"""
-🔥 **MT05 ULTRA ANALYSE** 🔥
-⚔️ {domicile} vs {exterieur}
+    if not dom:
+        await update.message.reply_text("❌ Format invalide. Envoie : `Domicile vs Exterieur `", parse_mode='Markdown')
+        return
 
-🎯 **SCORES EXACTS PROBABLES :**
-🥇 {scores[0][0]} - {scores[0][1]}%
-🥈 {scores[1][0]} - {scores[1][1]}%
-🥉 {scores[2][0]} - {scores[2][1]}%
+    scores, pct_dom, pct_nul, pct_ext = analyse_scores(odd_dom, odd_ext)
 
-📊 **ISSUE DU MATCH :**
-🏠 Victoire {domicile}: {victoire_dom}%
-🤝 Nul: {nul}%
-✈️ Victoire {exterieur}: {victoire_ext}%
+    message = f"🔥 **MT05 ULTRA ANALYSE** 🔥\n"
+    message += f"⚔️ **{dom} vs {ext}**\n\n"
+    message += f"🎯 **SCORES EXACTS :**\n"
+    for score, pct in scores:
+        message += f"• {score} - {pct}%\n"
+    message += f"\n📊 **ISSUE DU MATCH :**\n"
+    message += f"🏠 Victoire {dom}: {pct_dom}%\n"
+    message += f"🤝 Nul: {pct_nul}%\n"
+    message += f"✈️ Victoire {ext}: {pct_ext}%\n\n"
+    message += f"🔒 **SAFE :** 1X + Under 3.5" if pct_dom > pct_ext else f"🔒 **SAFE :** X2 +Plus 7.5 Under 3.5"
 
-💡 **CONSEIL MT05 :**
-{"✅ 1X + Under 3.5" if victoire_dom > victoire_ext else "✅ X2 + Under 3.5"} - SAFE
-🔥 Score le plus sûr: {scores[0][0]}
+    keyboard = [[InlineKeyboardButton("💎 REJOINDRE VIP PRO", url=LIEN_VIP)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-👇 Prono VIP complet?
-"""
-    return msg
+    await update.message.reply_text(message, reply_markup=reply_markup, parse_mode='Markdown')
 
-# --- BOUTONS ---
-@bot.message_handler(commands=['start'])
-def start(m):
-    markup = telebot.types.InlineKeyboardMarkup()
-    markup.add(telebot.types.InlineKeyboardButton("🔍 ANALYSER UN MATCH", callback_data="analyser"))
-    markup.add(telebot.types.InlineKeyboardButton("💎 CANAL VIP", url="https://t.me/MT05Officiel")) # CHANGE TON LIEN ICI
-    bot.send_message(m.chat.id,
-        "Bienvenue sur **MT05 BOT ULTRA** 🤖\n\nClique sur ANALYSER et envoie un match comme:\n`CITY vs PARIS`",
-        reply_markup=markup, parse_mode="Markdown")
-
-@bot.callback_query_handler(func=lambda call: call.data == "analyser")
-def ask_match(call):
-    bot.send_message(call.message.chat.id, "Envoie le match maintenant:\nEx: `CITY vs PARIS BUT PLUS`")
-
-@bot.message_handler(func=lambda m: "vs" in m.text.lower())
-def analyse_auto(m):
-    analyse = generer_analyse(m.text)
-    markup = telebot.types.InlineKeyboardMarkup()
-    markup.add(telebot.types.InlineKeyboardButton("🔄 Re-analyser", callback_data="analyser"))
-    bot.send_message(m.chat.id, analyse, reply_markup=markup, parse_mode="Markdown")
-
-# --- LANCEMENT ---
-def run_bot():
-    bot.infinity_polling()
-
-if __name__ == "__main__":
-    threading.Thread(target=run_bot).start()
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+# LANCEUR
+app = Application.builder().token("TON_TOKEN_ICI").build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_match))
+app.run_polling()
