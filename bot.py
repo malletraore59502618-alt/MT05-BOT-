@@ -17,19 +17,18 @@ def start(message):
     bot.send_message(message.chat.id, "🔥 MT05 BOT prêt boss!\nEnvoie: Real vs Barca")
 
 @bot.message_handler(func=lambda m: True)
-def analyze(message):
-    if "vs" not in message.text.lower() and "contre" not in message.text.lower():
-        bot.send_message(message.chat.id, "Envoie: Real vs Barca")
+def analyze(m):
+    txt = m.text
+    if "vs" not in txt.lower():
+        bot.send_message(m.chat.id, "Format: Real vs Barca")
         return
-    txt = message.text.lower().replace("contre","vs")
-    team1, team2 = txt.split("vs",1)
-    result = f"⚽ MT05: {team1.strip().upper()} vs {team2.strip().upper()}\n\n🎯 Scores probables:\n1-1 (22% ⭐)\n2-1 (18%)\n1-0 (15%)\n\n💡 Conseil: 1X + Under 3.5 - 78% confiance"
-    bot.send_message(message.chat.id, result)
+    t1, t2 = txt.split("vs",1)
+    res = f"⚽ MT05: {t1.strip().upper()} vs {t2.strip().upper()}\n\n🎯 Score: 1-1 (22%)\n2-1 (18%)\n1-0 (15%)\n\n💡 Conseil: 1X + Under 3.5"
+    bot.send_message(m.chat.id, res)
 
 def run_bot():
     bot.infinity_polling()
 
 if __name__ == "__main__":
     threading.Thread(target=run_bot).start()
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT",10000)))
