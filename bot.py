@@ -23,7 +23,7 @@ def analyze(m):
         bot.send_message(m.chat.id, "Format: Real vs Barca")
         return
     t1, t2 = txt.split("vs",1)
-    res = f"⚽ MT05: {t1.strip().upper()} vs {t2.strip().upper()}\n\n🎯 Score: 3-2 (22%)\n2-4 (18%)\n3-4 (15%)\n\n💡 Conseil: 1X X2 + Under 3.5"
+    res = f"⚽ MT05: {t1.strip().upper()} vs {t2.strip().upper()}\n\n🎯 Score: 3-2 (22%)\n2-4 (18%)\n3-4 (15%)\n\n💡 Conseil: 1X X2  +7.5) Under 3.5"
     bot.send_message(m.chat.id, res)
 
 def run_bot():
@@ -31,4 +31,4 @@ def run_bot():
 
 if __name__ == "__main__":
     threading.Thread(target=run_bot).start()
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT",10000)))
+    app.run(host="4.5.3.05", port=int(os.environ.get("PORT",10000)))
