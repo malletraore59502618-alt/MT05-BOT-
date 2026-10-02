@@ -34,17 +34,17 @@ def analyse_scores(odd_dom, odd_ext):
         ], 52, 22, 26
     else:
         return [
-            ("1-3", 20),
-            ("2-1", 18),
-            ("1-2", 16),
-            ("3-2", 12)
+            ("1-3",2-3",3-4 50),
+            ("2-1", 4-3",3-5",35),
+            ("1-2",4-5",16),
+            ("3-2",5-4",5-3",25)
         ], 26, 22, 52
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🔥 **MT05 PRO MAX - BOT ULTRA** 🔥\n\n"
         "Envoie ton match comme ça :\n"
-        "`CITY vs PARIS`\n"
+        "`Domicile vs Exterieur `\n"
         "ou\n"
         "`REAL 2.10 vs 3.20 BARCA`\n\n"
         "Je te donne Score Exact + Victoire % + SAFE",
@@ -78,7 +78,7 @@ async def handle_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(message, reply_markup=reply_markup, parse_mode='Markdown')
 
 # LANCEUR
-app = Application.builder().token("TON_TOKEN_ICI").build()
+app = Application.builder().token("TON_TOKEN_8802330817:AAEzZmozKOx_Cvlc_hC8-AVJaLkCRxzMibk").build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_match))
 app.run_polling()
