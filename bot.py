@@ -1,60 +1,35 @@
+
 import os
 import telebot
-from telebot import types
+from flask import Flask
+import threading
 
-# Ton token est dans Render > Environment
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-if not BOT_TOKEN:
-    raise ValueError("BOT_TOKEN manquant dans Environment Render!")
-
 bot = telebot.TeleBot(BOT_TOKEN)
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "MT05 BOT Live! 🔥"
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    text = (
-        "🔥 **MT05 BOT - Analyse Exact Score** 🔥\n\n"
-        "Bienvenue boss!\n\n"
-        "Envoie un match comme ça:\n"
-        "`Real vs Barca`\n"
-        "ou\n"
-        "`PSG vs Arsenal`\n\n"
-        "Je te donne analyse + proba exact score."
-    )
-    bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    bot.send_message(message.chat.id, "🔥 MT05 BOT prêt boss!\nEnvoie: Real vs Barca")
 
 @bot.message_handler(func=lambda m: True)
 def analyze(message):
-    try:
-        if "vs" not in message.text.lower():
-            bot.send_message(message.chat.id, "Envoie comme ça: `City vs Real`", parse_mode="Markdown")
-            return
+    if "vs" not in message.text.lower() and "contre" not in message.text.lower():
+        bot.send_message(message.chat.id, "Envoie: Real vs Barca")
+        return
+    txt = message.text.lower().replace("contre","vs")
+    team1, team2 = txt.split("vs",1)
+    result = f"⚽ MT05: {team1.strip().upper()} vs {team2.strip().upper()}\n\n🎯 Scores probables:\n1-1 (22% ⭐)\n2-1 (18%)\n1-0 (15%)\n\n💡 Conseil: 1X + Under 3.5 - 78% confiance"
+    bot.send_message(message.chat.id, result)
 
-        teams = message.text.split("vs")
-        if len(teams)!= 2:
-            teams = message.text.split("VS")
+def run_bot():
+    bot.infinity_polling()
 
-        team1 = teams[0].strip()
-        team2 = teams[1].strip()
-
-        # Logique MT05 - Analyse Math
-        reponse = f"⚽ **MT05 ANALYSE** ⚽\n\n"
-        reponse += f"Match: **{team1} vs {team2}**\n\n"
-        reponse += f"📊 **Forme:**\n"
-        reponse += f"• {team1}: Attaque 85% | Défense 78%\n"
-        reponse += f"• {team2}: Attaque 82% | Défense 80%\n\n"
-        reponse += f"🎯 **Scores Exacts Probables (Math MT05):**\n"
-        reponse += f"• 1-1 : 22% ⭐ (Safe)\n"
-        reponse += f"• 2-1 : 18%\n"
-        reponse += f"• 1-0 : 15%\n"
-        reponse += f"• 2-0 : 12%\n"
-        reponse += f"• 0-0 : 10%\n\n"
-        reponse += f"💡 **Conseil MT05:** Double chance 1X + Under 3.5\n"
-        reponse += f"🔒 Confiance: 78%"
-
-        bot.send_message(message.chat.id, reponse, parse_mode="Markdown")
-
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Erreur: {e}")
-
-print("MT05 BOT Lancé...")
-bot.infinity_polling()
+if __name__ == "__main__":
+    threading.Thread(target=run_bot).start()
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
