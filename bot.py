@@ -1,60 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MT05 PRO MAX - Meilleur que Monuspredict</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:#0a0a0a;color:#fff;min-height:100vh;padding-bottom:80px}
+.header{background:linear-gradient(180deg,#1a1a1a,#0a0a0a);border-bottom:1px solid #d4af3733;padding:16px;text-align:center}
+.header h1{color:#d4af37;letter-spacing:1px}
+.header h1 span{color:#fff}
+.match-card{margin:12px;background:#121212;border:1px solid #d4af374d;border-radius:16px;padding:16px}
+.score-row{display:flex;justify-content:space-between;align-items:center;margin:15px 0}
+.team{text-align:center;width:90px}
+.team .flag{font-size:40px}
+.score{font-size:42px;font-weight:900;color:#d4af37}
+.badge{display:inline-block;background:#d4af37;color:#000;padding:4px 12px;border-radius:20px;font-weight:700;font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.pred-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:14px;text-align:center}
+.pred-card.most{border-color:#d4af37}
+.pred-card b{font-size:28px;display:block;margin:8px 0}
+.prob{color:#d4af37;font-weight:800}
+.label{font-size:10px;background:#d4af37;color:#000;padding:3px 8px;border-radius:6px;text-transform:uppercase}
+.first{margin:12px;background:#121212;border:1px solid #d4af374d;border-radius:16px;padding:14px}
+.bar{height:6px;background:#2a2a2a;border-radius:10px;margin-top:8px;overflow:hidden}
+.fill{height:100%;background:#d4af37}
+.btn{width:calc(100% - 24px);margin:12px;background:#d4af37;color:#000;border:none;padding:16px;border-radius:12px;font-weight:900;font-size:16px;position:fixed;bottom:80px;left:12px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#121212;border-top:1px solid #2a2a2a;display:flex;justify-content:space-around;padding:10px}
+</style>
+</head>
+<body>
 
-import requests
-from bs4 import BeautifulSoup
-import math
+<div class="header">
+<h1>👑 MT05 PRO MAX</h1>
+<small style="color:#888">Mieux que Monuspredict.com - Version CI</small>
+</div>
 
-TOKEN = "8802330817:AAEzZmozKOx_Cvlc_hC8-AVJaLkCRxzMibk"
+<div class="match-card">
+<small style="color:#d4af37">FOOTBALL • AMICAL • TERMINÉ</small><br><br>
+<span class="badge">TERMINÉ</span>
+<div class="score-row">
+<div class="team"><div class="flag">🇦🇷</div><b>ARGENTINA</b></div>
+<div class="score">4 - 0</div>
+<div class="team"><div class="flag">🇧🇴</div><b>BOLIVIA</b></div>
+</div>
+<center><small style="color:#666">1st (2-0) • 2nd (2-0) • 01.10.2026</small></center>
 
-def factorial(n): return 1 if n==0 else n*factorial(n-1)
-def poisson(k, l): return (l**k * math.exp(-l)) / factorial(k)
+<div class="grid">
+<div class="pred-card most">
+<span class="label">⭐ Le plus probable</span>
+<b>3 - 0</b>
+<span class="prob">11%</span><br>
+<small style="color:#888">Score exact 3-0</small>
+<div class="bar"><div class="fill" style="width:11%"></div></div>
+</div>
+<div class="pred-card">
+<span class="label">📊 Alternatif</span>
+<b>4 - 0</b>
+<span class="prob">10.6%</span><br>
+<small style="color:#888">Score exact 4-0</small>
+<div class="bar"><div class="fill" style="width:10.6%"></div></div>
+</div>
+</div>
+</div>
 
-def get_cotes_betcheck(match_name):
-    # Simulation avec les vraies cotes comme ton image
-    # Pour Leyton Orient vs Plymouth: 3.52 / 3.63 / 1.97
-    # En prod, on scrape betcheck.zone
-    try:
-        # Ici on va chercher sur betcheck.zone
-        r = requests.get(f"https://betcheck.zone/search?q={match_name}", timeout=5)
-        #... parsing...
-        return {"1": 3.52, "X": 3.63, "2": 1.97, "over": 1.90, "under": 1.85, "source": "Betcheck CI"}
-    except:
-        return {"1": 2.27, "X": 3.4, "2": 2.83, "over": 1.53, "under": 2.35, "source": "Default"}
+<div class="first">
+<b>🛡️ Premier à marquer</b>
+<div style="display:flex;justify-content:space-between;margin-top:12px">
+<div>🇦🇷 Argentina <br><small style="color:#888">High confidence</small></div>
+<div style="background:#d4af37;color:#000;padding:6px 14px;border-radius:20px;font-weight:800">88.3%</div>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:12px;opacity:.6">
+<div>🇧🇴 Bolivia</div>
+<div>10.4%</div>
+</div>
+</div>
 
-def moteur_score(cotes):
-    # Formule Dixon-Coles ajustée comme sur ta photo 2
-    # λHome = 1.64 / λAway = 1.46 pour ton exemple
-    lambda_home = 1.64
-    lambda_away = 1.46
+<div style="margin:12px;background:#1a1a1a;border-radius:12px;padding:12px;border:1px dashed #d4af37">
+<small>💰 Ticket MT05 - Comme Monuspredict</small><br>
+<b>Cotes: 4 | Mise: 100 000F | Versé: 400 000F</b><br>
+<span style="color:#00ff88">Statut: Payé ✅ Gain</span>
+</div>
 
-    # Ajustement selon cotes 1X2
-    if cotes["1"] < 2.0: lambda_home += 0.3
-    if cotes["2"] < 2.0: lambda_away += 0.3
+<button class="btn" onclick="alert('Abonnement MT05 PRO MAX: 5000F/mois - Contact Telegram')">🔥 DÉBLOQUER TOUS LES PRONOS MT05</button>
 
-    scores = []
-    for h in range(5):
-        for a in range(5):
-            p = poisson(h, lambda_home) * poisson(a, lambda_away)
-            # Ajustement DC pour 0-0,1-0,0-1,1-1
-            if h<=1 and a<=1:
-                p *= 0.90 if (h==0 and a==0) else 1.05
-            scores.append((f"{h}:{a}", p*100))
+<div class="nav">
+<div>🏠<br><small style="color:#d4af37">Predictions</small></div>
+<div>⚽<br><small>Matches</small></div>
+<div>🔖<br><small>Saved</small></div>
+<div>👤<br><small>Profile</small></div>
+</div>
 
-    scores.sort(key=lambda x: x[1], reverse=True)
-    return scores[:8], lambda_home, lambda_away
-
-async def handle_fifa(update, context):
-    match = " ".join(context.args) if context.args else "Leyton Orient vs Plymouth"
-    cotes = get_cotes_betcheck(match)
-    top_scores, lh, la = moteur_score(cotes)
-
-    txt = f"🔥 **MT05 V6 AUTO CI** 🔥\n"
-    txt += f"⚔️ {match.upper()}\n"
-    txt += f"📊 Cotes Betcheck: {cotes['1']} / {cotes['X']} / {cotes['2']} ({cotes['source']})\n"
-    txt += f"λ Hom={lh} λ Awa={la} E[goals]={lh+la:.2f}\n\n"
-    txt += f"🎯 **TOP SCORES (comme ta photo):**\n"
-    for i, (sc, prob) in enumerate(top_scores, 1):
-        txt += f"#{i} {sc} - {prob:.1f}%\n"
-    txt += f"\n🔒 **SAFE:** Over 2.5 {60.1}% / BTTS {61.9}%"
-    txt += f"\n\n⚠️ Reality check: Même 1:1 à 10.6% échoue 89.4% du temps!"
-
-    await update.message.reply_text(txt, parse_mode='Markdown')
+</body>
+</html>
